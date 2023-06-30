@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LaTeX Equation Editor</title>
+  <style>
+    /* CSS styles for the editor interface */
+    .editor-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .editor {
+      flex: 1;
+      resize: vertical;
+    }
+    .preview {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="editor-container">
+    <textarea id="editor" class="editor" placeholder="Compose your LaTeX equation here"></textarea>
+    <div class="preview">
+      <h2>Preview</h2>
+      <div id="equation-preview"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  <script>
+    // JavaScript code for the equation editor
+    var editor = document.getElementById('editor');
+    var equationPreview = document.getElementById('equation-preview');
+
+    editor.addEventListener('input', function() {
+      renderEquation();
+    });
+
+    function renderEquation() {
+      var equationText = editor.value;
+      equationPreview.innerHTML = '';
+      MathJax.texReset();
+      var options = MathJax.getMetricsFor(equationPreview);
+      MathJax.tex2chtmlPromise(equationText, options).then(function(node) {
+        equationPreview.appendChild(node);
+        MathJax.startup.document.clear();
+        MathJax.startup.document.updateDocument();
+      }).catch(function(error) {
+        console.error(error);
+      });
+    }
+  </script>
+</body>
+</html>

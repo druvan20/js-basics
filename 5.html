@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Side-Strafing Game</title>
+  <style>
+    /* CSS styles for the game canvas */
+    #game-canvas {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 1px solid #ccc;
+    }
+    .player {
+      position: absolute;
+      top: 180px;
+      left: 20px;
+      width: 30px;
+      height: 30px;
+      background-color: red;
+    }
+    .obstacle {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: blue;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-canvas">
+    <div class="player"></div>
+    <!-- Obstacles will be dynamically created here -->
+  </div>
+
+  <script>
+    // JavaScript code for the game logic
+    var gameCanvas = document.getElementById('game-canvas');
+    var player = document.querySelector('.player');
+
+    // Set up event listeners to control player movement
+    document.addEventListener('keydown', function(event) {
+      if (event.code === 'ArrowUp') {
+        movePlayerUp();
+      } else if (event.code === 'ArrowDown') {
+        movePlayerDown();
+      }
+    });
+
+    // Function to move the player up
+    function movePlayerUp() {
+      var topPosition = parseInt(player.style.top) || 0;
+      if (topPosition > 0) {
+        player.style.top = (topPosition - 10) + 'px';
+      }
+    }
+
+    // Function to move the player down
+    function movePlayerDown() {
+      var topPosition = parseInt(player.style.top) || 0;
+      if (topPosition < gameCanvas.offsetHeight - player.offsetHeight) {
+        player.style.top = (topPosition + 10) + 'px';
+      }
+    }
+
+    // Function to dynamically create obstacles
+    function createObstacle() {
+      var obstacle = document.createElement('div');
+      obstacle.className = 'obstacle';
+      obstacle.style.top = Math.random() * (gameCanvas.offsetHeight - obstacle.offsetHeight) + 'px';
+      obstacle.style.right = '-20px';
+      gameCanvas.appendChild(obstacle);
+
+      // Move the obstacle towards the player
+      var obstacleMoveInterval = setInterval(function() {
+        var obstacleRightPosition = parseInt(obstacle.style.right) || 0;
+        if (obstacleRightPosition > gameCanvas.offsetWidth) {
+          clearInterval(obstacleMoveInterval);
+          obstacle.remove();
+        } else {
+          obstacle.style.right = (obstacleRightPosition + 5) + 'px';
+          checkCollision(obstacle);
+        }
+      }, 20);
+    }
+
+    // Function to check for collision between the player and an obstacle
+    function checkCollision(obstacle) {
+      var playerRect = player.getBoundingClientRect();
+      var obstacleRect = obstacle.getBoundingClientRect();
+
+      if (
+        playerRect.top < obstacleRect.bottom &&
+        playerRect.bottom > obstacleRect.top &&
+        playerRect.left < obstacleRect.right &&
+        playerRect.right > obstacleRect.left
+      ) {
+        // Collision occurred, handle it (e.g., end the game)
+        endGame();
+      }
+    }
+
+    // Function to end the game
+    function endGame() {
+      alert('Game Over');
+      // Perform any necessary cleanup and restart the game
+      location.reload();
+    }
+
+    // Start the game by creating obstacles at regular intervals
+    setInterval(createObstacle, 2000);
+  </script>
+</body>
+</html>
